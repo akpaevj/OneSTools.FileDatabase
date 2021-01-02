@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneSTools.FileDatabase", "OneSTools.FileDatabase\OneSTools.FileDatabase.csproj", "{EDF41082-9B3F-4AA2-9E60-C18901AFC25A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneSTools.FileDatabaseTestApp", "OneSTools.FileDatabaseTestApp\OneSTools.FileDatabaseTestApp.csproj", "{40FCEDB2-4C4B-4419-90BB-1BD80840AC05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDF41082-9B3F-4AA2-9E60-C18901AFC25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDF41082-9B3F-4AA2-9E60-C18901AFC25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDF41082-9B3F-4AA2-9E60-C18901AFC25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDF41082-9B3F-4AA2-9E60-C18901AFC25A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40FCEDB2-4C4B-4419-90BB-1BD80840AC05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40FCEDB2-4C4B-4419-90BB-1BD80840AC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40FCEDB2-4C4B-4419-90BB-1BD80840AC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40FCEDB2-4C4B-4419-90BB-1BD80840AC05}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37516B47-10E9-4C36-B852-487DB3568E24}
+	EndGlobalSection
+EndGlobal

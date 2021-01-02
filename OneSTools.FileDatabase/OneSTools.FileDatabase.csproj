@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>OneSTools.FileDatabase</AssemblyName>
+    <RootNamespace>OneSTools.FileDatabase</RootNamespace>
+    <Authors>Akpaev Evgeny</Authors>
+    <Company>Akpaev Evgeny</Company>
+    <Description>Библиотека для чтения данных файловых информационных баз 1С</Description>
+    <Copyright>Akpaev Evgeny</Copyright>
+    <PackageIcon>onestools_icon_nuget.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OneSTools.BracketsFile" Version="2.1.4" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\onestools_icon_nuget.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
