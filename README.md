@@ -6,7 +6,7 @@
 Пример работы с библиотекой:  
 
 ```csharp
-using var database = new FileDatabaseConnection("..\1Cv8.1CD");
+using var database = new FileDatabaseConnection("..\\1Cv8.1CD");
 database.Open();
 
 var table = database.Tables.FirstOrDefault(c => c.Name == "_Document38");
