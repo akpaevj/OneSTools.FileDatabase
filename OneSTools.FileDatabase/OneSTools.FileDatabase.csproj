@@ -9,6 +9,9 @@
     <Description>Библиотека для чтения данных файловых информационных баз 1С</Description>
     <Copyright>Akpaev Evgeny</Copyright>
     <PackageIcon>onestools_icon_nuget.png</PackageIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/akpaevj/OneSTools.FileDatabase</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/akpaevj/OneSTools.FileDatabase</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
