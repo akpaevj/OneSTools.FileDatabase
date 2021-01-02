@@ -16,28 +16,43 @@ namespace OneSTools.FileDatabaseTestApp
             using var database = new FileDatabaseConnection(filePath2);
             database.Open();
 
-            var table = database.Tables.FirstOrDefault(c => c.Name == "_Document38");
-
-            if (table != null)
+            foreach(var table in database.Tables)
             {
-                foreach (var values in table.Rows)
-                {
-                    for (int i = 0; i < table.Fields.Count; i++)
-                    {
-                        var field = table.Fields[i];
-                        var value = values[i];
+                Console.WriteLine($"Table \"{table}\":");
 
-                        // Or another one what you need
-                        if (field.Type == FieldType.Numeric)
-                        {
-                            var typedValue = (decimal?)value;
-                        }
-                        if (field.Type == FieldType.NChar
-                            || field.Type == FieldType.NText
-                            || field.Type == FieldType.NVarChar)
-                        {
-                            var typedValue = (string)value;
-                        }
+                // list the table fields
+                Console.WriteLine("\tFields:");
+
+                foreach (var field in table.Fields)
+                    Console.WriteLine($"\t\tField \"{field}\"");
+
+                if (table.Indexes.Count > 0)
+                {
+                    // list the table indexes
+                    Console.WriteLine("\tIndexes:");
+
+                    foreach (var index in table.Indexes)
+                    {
+                        Console.WriteLine($"\t\tIndex \"{index}\"");
+
+                        // list the index fields
+                        Console.WriteLine("\t\t\tIndex fields:");
+
+                        foreach (var indexField in index.Fields)
+                            Console.WriteLine($"\t\t\t\tIndex field \"{indexField}\"");
+
+                    }
+                }
+
+                // list the table data (rows)
+                if (table.Rows.Count > 0)
+                {
+                    Console.WriteLine("\tRows:");
+
+                    // values is an array of objects, it contains values as in the same order as fields are represented
+                    foreach (var values in table.Rows)
+                    {
+                        Console.WriteLine("\t\tRow");
                     }
                 }
             }
