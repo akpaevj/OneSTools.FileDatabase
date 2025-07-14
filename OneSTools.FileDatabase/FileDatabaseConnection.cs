@@ -3,23 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using OneSTools.FileDatabase.LowLevel;
-using System.Linq;
 using OneSTools.FileDatabase.LowLevel.Pages;
 using OneSTools.FileDatabase.LowLevel.Files;
 using OneSTools.BracketsFile;
 using System.Text;
-using System.Data.Common;
-using System.Collections.ObjectModel;
-using System.Data;
 
 namespace OneSTools.FileDatabase
 {
     /// <summary>
     /// Provides properties and methods for reading 1C file database data
     /// </summary>
-    public class FileDatabaseConnection : IDisposable
+    public class FileDatabaseConnection(string path) : IDisposable
     {
-        private readonly string _path;
         private FileDatabaseStream _stream;
         private HeaderPage _headerPage;
         private FreePagesPage _freePagesPage;
@@ -28,7 +23,7 @@ namespace OneSTools.FileDatabase
         /// <summary>
         /// The flag of database opening
         /// </summary>
-        public bool Opened { get; private set; } = false;
+        public bool Opened { get; private set; }
         /// <summary>
         /// Version of the database file
         /// </summary>
@@ -40,20 +35,19 @@ namespace OneSTools.FileDatabase
         /// <summary>
         /// A collection of database tables
         /// </summary>
-        public ReadOnlyCollection<Table> Tables { get; private set; } = null;
-
-        public FileDatabaseConnection(string path)
-             => _path = path;
+        public Tables Tables { get; private set; }
+        
+        public Table this[string tableName] => Tables[tableName];
 
         /// <summary>
-        /// Open database file
+        /// Open a database file
         /// </summary>
         public void Open()
         {
-            if (!File.Exists(_path))
-                throw new FileNotFoundException("Cannot find a database file", _path);
+            if (!File.Exists(path))
+                throw new FileNotFoundException("Cannot find a database file", path);
 
-            var stream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             _stream = new FileDatabaseStream(stream);
 
             ReadStructure();
@@ -76,7 +70,7 @@ namespace OneSTools.FileDatabase
 
             var tables = new List<Table>();
 
-            for (int i = 0; i < _databaseDescriptionFile.TablesCount; i++)
+            for (var i = 0; i < _databaseDescriptionFile.TablesCount; i++)
             {
                 var tableDefinitionData = _databaseDescriptionFile.ReadTableDefinitionData();
                 var tableDefinitionStr = Encoding.UTF8.GetString(tableDefinitionData);
@@ -86,11 +80,11 @@ namespace OneSTools.FileDatabase
                 tables.Add(table);
             }
 
-            Tables = tables.AsReadOnly(); 
+            Tables = new Tables(tables.AsReadOnly()); 
         }
 
         /// <summary>
-        /// Close database file
+        /// Close the database file
         /// </summary>
         public void Close()
         {

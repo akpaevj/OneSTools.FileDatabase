@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Collections.Immutable;
 using OneSTools.FileDatabase.LowLevel;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OneSTools.FileDatabase.HighLevel
 {
     public class Table
     {
+        internal Dictionary<string, int> FieldNameNumberCache { get; private set; } = new();
+        
         internal int MaxRowSize { get; private set; }
         internal uint DataFilePage { get; private set; }
         internal uint UnlimitedLengthDataFilePage { get; private set; }
@@ -17,26 +21,26 @@ namespace OneSTools.FileDatabase.HighLevel
         /// <summary>
         /// Internal name of the table
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
         /// <summary>
         /// Collection of table fields
         /// </summary>
-        public ReadOnlyCollection<Field> Fields { get; private set; } = null;
+        public Field[] Fields { get; private set; }
         /// <summary>
         /// Collection of table indexes
         /// </summary>
-        public ReadOnlyCollection<Index> Indexes { get; private set; } = null;
-        public bool RecordLock { get; private set; }
+        public Index[] Indexes { get; private set; }
+        public bool RecordLock { get; }
         /// <summary>
         /// Collection of table rows
         /// </summary>
-        public IReadOnlyList<object[]> Rows { get; private set; } = null;
+        public IReadOnlyList<TableRow> Rows { get; private set; }
 
         internal Table(FileDatabaseStream stream, BracketsNode node)
         {
             Name = node[0];
 
-            for (int i = 2; i < node.Count; i++)
+            for (var i = 2; i < node.Count; i++)
             {
                 var currentNode = node[i];
                 string nodeName = currentNode[0];
@@ -69,7 +73,7 @@ namespace OneSTools.FileDatabase.HighLevel
         {
             var fields = new List<Field>();
 
-            for (int i = 1; i < node.Count; i++)
+            for (var i = 1; i < node.Count; i++)
             {
                 var field = new Field();
                 field.Read(node[i]);
@@ -91,7 +95,8 @@ namespace OneSTools.FileDatabase.HighLevel
             if (fields.Count > 0 && fields[0].Type == FieldType.RowVersion && RecordLock)
                 MaxRowSize += 8;
 
-            Fields = fields.AsReadOnly();
+            Fields = fields.ToArray();
+            FieldNameNumberCache = Fields.Select((e, i) => new KeyValuePair<string, int>(e.Name, i)).ToDictionary(e => e.Key, e => e.Value);
         }
 
         private void ReadIndexes(BracketsNode node)
@@ -100,7 +105,7 @@ namespace OneSTools.FileDatabase.HighLevel
 
             if (node.Count > 1)
             {
-                for (int i = 1; i < node.Count; i++)
+                for (var i = 1; i < node.Count; i++)
                 {
                     var index = new Index();
                     index.Read(node[i]);
@@ -109,12 +114,10 @@ namespace OneSTools.FileDatabase.HighLevel
                 }
             }
 
-            Indexes = indexes.AsReadOnly();
+            Indexes = indexes.ToArray();
         }
 
         public override string ToString()
-        {
-            return Name;
-        }
+            => Name;
     }
 }

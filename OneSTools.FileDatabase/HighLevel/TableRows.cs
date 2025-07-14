@@ -5,12 +5,11 @@ using OneSTools.FileDatabase.LowLevel;
 using OneSTools.FileDatabase.LowLevel.Files;
 using System.Buffers.Binary;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace OneSTools.FileDatabase.HighLevel
 {
-    internal class TableRows : IReadOnlyList<object[]>
+    internal class TableRows : IReadOnlyList<TableRow>
     {
         private readonly FileDatabaseStream _stream;
         private readonly Table _table;
@@ -23,7 +22,7 @@ namespace OneSTools.FileDatabase.HighLevel
             _table = table;
         }
 
-        public object[] this[int index]
+        public TableRow this[int index]
         {
             get
             {
@@ -46,9 +45,9 @@ namespace OneSTools.FileDatabase.HighLevel
             }
         }
 
-        public IEnumerator<object[]> GetEnumerator()
+        public IEnumerator<TableRow> GetEnumerator()
         {
-            for (int i = 0; i < Count; i++)
+            for (var i = 0; i < Count; i++)
             {
                 yield return Get(i + 1);
             }
@@ -65,7 +64,7 @@ namespace OneSTools.FileDatabase.HighLevel
             {
                 if (_table.DataFilePage != 0)
                 {
-                    _dataFile = new DataFile(_stream, _table.DataFilePage, _table.MaxRowSize, _table.Fields.Count > 0 && _table.Fields[0].Type != FieldType.RowVersion && _table.RecordLock);
+                    _dataFile = new DataFile(_stream, _table.DataFilePage, _table.MaxRowSize, _table.Fields.Length > 0 && _table.Fields[0].Type != FieldType.RowVersion && _table.RecordLock);
 
                     if (_dataFile.HasData())
                     {
@@ -84,47 +83,45 @@ namespace OneSTools.FileDatabase.HighLevel
             }
         }
 
-        private object[] Get(int rowNumber)
+        private TableRow Get(int rowNumber)
         {
             InitializeFiles();
 
             _dataFile.GoToRow(rowNumber);
 
-            var values = new object[_table.Fields.Count];
+            var values = new object[_table.Fields.Length];
 
             var rawData = _dataFile.ReadRow();
 
             if (rawData == null)
                 return null;
-            else
+            
+            var currentOffset = 0;
+
+            for (var i = 0; i < _table.Fields.Length; i++)
             {
-                var currentOffset = 0;
+                var field = _table.Fields[i];
 
-                for (int i = 0; i < _table.Fields.Count; i++)
+                var fieldData = rawData[currentOffset..(currentOffset + field.MaxSize)];
+
+                currentOffset += field.MaxSize;
+
+                values[i] = field.Type switch
                 {
-                    var field = _table.Fields[i];
-
-                    var fieldData = rawData[currentOffset..(currentOffset + field.MaxSize)];
-
-                    currentOffset += field.MaxSize;
-
-                    values[i] = field.Type switch
-                    {
-                        FieldType.Binary => ReadBinary(fieldData, field.Nullable),
-                        FieldType.Logical => ReadLogical(fieldData, field.Nullable),
-                        FieldType.Numeric => ReadNumericValue(fieldData, field.Precision, field.Nullable),
-                        FieldType.NChar => ReadNChar(fieldData, field.Nullable),
-                        FieldType.NVarChar => ReadNVarChar(fieldData, field.Nullable),
-                        FieldType.RowVersion => ReadRowVersion(fieldData, field.Nullable),
-                        FieldType.NText => ReadNText(fieldData, field.Nullable),
-                        FieldType.Image => ReadImage(fieldData, field.Nullable),
-                        FieldType.DateTime => ReadDateTime(fieldData, field.Nullable),
-                        _ => throw new Exception($"Reading value for a field with type {field.Type} is not implemented")
-                    };
-                }
-
-                return values;
+                    FieldType.Binary => ReadBinary(fieldData, field.Nullable),
+                    FieldType.Logical => ReadLogical(fieldData, field.Nullable),
+                    FieldType.Numeric => ReadNumericValue(fieldData, field.Precision, field.Nullable),
+                    FieldType.NChar => ReadNChar(fieldData, field.Nullable),
+                    FieldType.NVarChar => ReadNVarChar(fieldData, field.Nullable),
+                    FieldType.RowVersion => ReadRowVersion(fieldData, field.Nullable),
+                    FieldType.NText => ReadNText(fieldData, field.Nullable),
+                    FieldType.Image => ReadImage(fieldData, field.Nullable),
+                    FieldType.DateTime => ReadDateTime(fieldData, field.Nullable),
+                    _ => throw new Exception($"Reading value for a field with type {field.Type} is not implemented")
+                };
             }
+
+            return new TableRow(_table, values);
         }
 
         private byte[] ReadBinary(byte[] data, bool nullable)
@@ -323,15 +320,10 @@ namespace OneSTools.FileDatabase.HighLevel
                 return true;
         }
 
-        private byte[] GetValueData(byte[] data, bool nullable)
-        {
-            if (nullable)
-                return data[1..];
-            else
-                return data;
-        }
+        private static byte[] GetValueData(byte[] data, bool nullable)
+            => nullable ? data[1..] : data;
 
-        private int ReadTetrad(byte b, bool second = false)
+        private static int ReadTetrad(byte b, bool second = false)
         {
             if (second)
                 return b & 0b_0000_1111;

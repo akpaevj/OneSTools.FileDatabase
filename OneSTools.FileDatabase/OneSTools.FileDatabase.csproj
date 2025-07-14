@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>OneSTools.FileDatabase</AssemblyName>
     <RootNamespace>OneSTools.FileDatabase</RootNamespace>
     <Authors>Akpaev Evgeny</Authors>
     <Company>Akpaev Evgeny</Company>
     <Description>Библиотека для чтения данных файловых информационных баз 1С</Description>
     <Copyright>Akpaev Evgeny</Copyright>
-    <PackageIcon>onestools_icon_nuget.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/akpaevj/OneSTools.FileDatabase</PackageProjectUrl>
     <RepositoryUrl>https://github.com/akpaevj/OneSTools.FileDatabase</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <LangVersion>default</LangVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,13 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\onestools_icon_nuget.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath/>
     </None>
   </ItemGroup>
 

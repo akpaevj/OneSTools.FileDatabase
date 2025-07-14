@@ -10,10 +10,9 @@ namespace OneSTools.FileDatabaseTestApp
     {
         static void Main(string[] args)
         {
-            var filePath = @"C:\Users\akpaev.e.ENTERPRISE\Desktop\Новая папка (2)\1Cv8.1CD";
-            var filePath2 = @"C:\Users\akpaev.e.ENTERPRISE\Documents\InfoBase10\1Cv8.1CD";
+            var filePath = "/home/usr1cv8/crserver/test/1cv8ddb.1CD";
 
-            using var database = new FileDatabaseConnection(filePath2);
+            using var database = new FileDatabaseConnection(filePath);
             database.Open();
 
             foreach(var table in database.Tables)
@@ -26,7 +25,7 @@ namespace OneSTools.FileDatabaseTestApp
                 foreach (var field in table.Fields)
                     Console.WriteLine($"\t\tField \"{field}\"");
 
-                if (table.Indexes.Count > 0)
+                if (table.Indexes.Length > 0)
                 {
                     // list the table indexes
                     Console.WriteLine("\tIndexes:");
